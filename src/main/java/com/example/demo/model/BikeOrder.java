@@ -12,11 +12,11 @@ public class BikeOrder {
     @GenericGenerator(name="native", strategy = "native")
     private int orderId;
 
-    // Foreign key !!!
-    @Column(name = "bike_id")
+    //FOREIGN KEY ANNOTATION!
+    @Column(name = "bike_id", nullable = false)
     private int bikeId;
 
-    @Column(name = "order_price")
+    @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
     // Constructor 1

@@ -12,19 +12,19 @@ public class Bike {
     @GenericGenerator(name="native", strategy = "native")
     private int bikeId;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(name = "state")
+    @Column(name = "state", nullable = false)
     private String state;
 
-    @Column(name = "brand")
+    @Column(name = "brand", nullable = false)
     private String brand;
 
-    @Column(name = "frame_size")
+    @Column(name = "frame_size", nullable = false)
     private String frameSize;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
     // Constructor 1

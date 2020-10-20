@@ -81,7 +81,7 @@ public class Bike {
         this.frameSize = frameSize;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 

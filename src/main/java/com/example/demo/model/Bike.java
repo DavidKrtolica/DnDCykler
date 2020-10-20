@@ -1,11 +1,30 @@
 package com.example.demo.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name= "bike")
 public class Bike {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name="native", strategy = "native")
     private int bikeId;
+
+    @Column(name = "type")
     private String type;
+
+    @Column(name = "state")
     private String state;
+
+    @Column(name = "brand")
     private String brand;
+
+    @Column(name = "frame_size")
     private String frameSize;
+
+    @Column(name = "price")
     private int price;
 
     // Constructor 1

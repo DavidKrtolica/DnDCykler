@@ -1,8 +1,22 @@
 package com.example.demo.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "bike_order")
 public class BikeOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name="native", strategy = "native")
     private int orderId;
+
+    // Foreign key !!!
+    @Column(name = "bike_id")
     private int bikeId;
+
+    @Column(name = "order_price")
     private int orderPrice;
 
     // Constructor 1

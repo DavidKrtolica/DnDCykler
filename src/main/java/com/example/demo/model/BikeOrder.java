@@ -20,9 +20,9 @@ public class BikeOrder {
     private int bikeId;
 
     //BIKE RELATIONSHIP/ANNOTATION
-    @OneToOne(cascade = CascadeType.ALL)
+    //@OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "bike_id", referencedColumnName = "order_id")
-    private Bike bike;
+    //private Bike bike;
 
 
     // Constructor 1

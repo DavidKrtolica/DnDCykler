@@ -28,8 +28,8 @@ public class Bike {
     private int price;
 
     //ADDING THE BIKE ORDER ANNOTATION/RELATIONSHIP
-    @OneToOne(mappedBy = "bike")
-    private BikeOrder bikeOrder;
+    //@OneToOne(mappedBy = "bike")
+    //private BikeOrder bikeOrder;
 
     // Constructor 1
     public Bike() {}

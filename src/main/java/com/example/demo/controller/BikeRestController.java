@@ -19,15 +19,15 @@ public class BikeRestController {
 
     //FINDING ALL BIKES
     @GetMapping("/bikes")
-    public ResponseEntity<List> getAllBikes(){
+    public ResponseEntity<List> getAllBikes() {
         try {
             List<Bike> bikes = new ArrayList<>();
-                bikes = bikeRepository.findAll();
-            if (bikes.isEmpty()){
+            bikes = bikeRepository.findAll();
+            if (bikes.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(bikes, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -35,10 +35,13 @@ public class BikeRestController {
     //FINDING A BIKE BY ID
     @GetMapping("/bikes/{id}")
     public ResponseEntity<Bike> getBikeById(@PathVariable("id") int id) {
+
         Optional<Bike> bikeData = bikeRepository.findById(id);
-        if (bikeData.isPresent())
-            return new ResponseEntity<>(bikeData.get(), HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        if (bikeData.isPresent()) {
+            return new ResponseEntity<>(bikeData.get(),HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     //FIND BY BRAND
@@ -122,9 +125,98 @@ public class BikeRestController {
         }
     }
 
-    //UPDATING A BIKE
+    //UPDATING A BIKE BY ID
+    @PutMapping("/bikes/{id}")
+    public ResponseEntity<Bike> updateBikeById(@PathVariable("id") int id, @RequestBody Bike updatedBike) {
+        try {
+            // Initialize boolean variable and temporary int variable
+            boolean condition = false;
+            int temp = 0;
 
-    //DELETING A BIKE
+            // Initialize ArrayList and populate with entities from database
+            List<Bike> bikes = new ArrayList<>();
+            bikes = bikeRepository.findAll();
+
+            for (int i = 0; i < bikes.size(); i++) {
+
+                temp = bikes.get(i).getBikeId();
+
+                if(id == temp) {
+                    condition=true;
+                }
+            }
+
+            if (condition = true) {
+                Bike bike = bikeRepository.findById(id).get();
+
+                // Set attributes for the updated bike
+                bike.setType(updatedBike.getType());
+                bike.setState(updatedBike.getState());
+                bike.setBrand(updatedBike.getBrand());
+                bike.setFrameSize(updatedBike.getFrameSize());
+                bike.setPrice(updatedBike.getPrice());
+
+                final Bike bikeFinal = bikeRepository.save(bike);
+
+                return new ResponseEntity<>(bikeFinal, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //DELETING A BIKE BY ID
+    @DeleteMapping("/bikes/{id}")
+    public ResponseEntity<Bike> deleteBikeById(@PathVariable("id") int id) {
+        try {
+            // Initialize boolean variable and temporary int variable
+            boolean condition = false;
+            int temp = 0;
+            int ID = 0;
+
+            // Initialize ArrayList and populate with entities from database
+            List<Bike> bikes = new ArrayList<>();
+            bikes = bikeRepository.findAll();
+
+            for (int i = 0; i < bikes.size(); i++) {
+
+                temp = bikes.get(i).getBikeId();
+
+                if(id == temp) {
+                    ID = temp;
+                    condition=true;
+                }
+            }
+
+            if (condition = true) {
+                bikeRepository.deleteById(ID);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //DELETE ALL BIKES
+    @DeleteMapping("/bikes")
+    public ResponseEntity<Bike> deleteAllBikes() {
+        try {
+            List<Bike> bikes = bikeRepository.findAll();
+            if (bikes.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                bikeRepository.deleteAll();
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     //PAGINATION
 

@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface BikeRepository extends JpaRepository<Bike, Integer> {
     List<Bike> findByBrandContaining(String brand);
-    Bike getBikeByBikeId(int id);
+    List<Bike> findByTypeContaining(String type);
+    List<Bike> findByStateContaining(String state);
+    List<Bike> findByFrameSizeContaining(String frameSize);
 }

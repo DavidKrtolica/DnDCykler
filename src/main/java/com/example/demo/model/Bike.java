@@ -27,6 +27,10 @@ public class Bike {
     @Column(name = "price", nullable = false)
     private int price;
 
+    //ADDING THE BIKE ORDER ANNOTATION/RELATIONSHIP
+    @OneToOne(mappedBy = "bike")
+    private BikeOrder bikeOrder;
+
     // Constructor 1
     public Bike() {}
 

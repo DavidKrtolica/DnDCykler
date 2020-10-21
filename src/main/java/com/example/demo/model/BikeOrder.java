@@ -12,12 +12,18 @@ public class BikeOrder {
     @GenericGenerator(name="native", strategy = "native")
     private int orderId;
 
-    //FOREIGN KEY ANNOTATION!
+    @Column(name = "order_price", nullable = false)
+    private int orderPrice;
+
+    //FOREIGN KEY, MUST BE DELETED LATER!
     @Column(name = "bike_id", nullable = false)
     private int bikeId;
 
-    @Column(name = "order_price", nullable = false)
-    private int orderPrice;
+    //BIKE RELATIONSHIP/ANNOTATION
+    @OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "bike_id", referencedColumnName = "order_id")
+    private Bike bike;
+
 
     // Constructor 1
     public BikeOrder() {}

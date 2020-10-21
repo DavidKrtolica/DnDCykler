@@ -113,6 +113,27 @@ public class BikeRestController {
     }
 
     //FIND BY PRICE -> PRICE RANGE (FROM MIN TO MAX)
+    @GetMapping({"/bikeByPriceRange", "/bikePriceRange"})
+    public ResponseEntity<List> getAllBikesByPriceRange(@RequestParam int min, int max){
+        try {
+            List<Bike> bikes = new ArrayList<>();
+            List<Bike> bikesInRange = new ArrayList<>();
+            int priceTest;
+            bikes = bikeRepository.findAll();
+            for (int i = 0; i < bikes.size(); i++){
+                priceTest = bikes.get(i).getPrice();
+                if (priceTest >= min && priceTest <= max){
+                    bikesInRange.add(bikes.get(i));
+                }
+            }
+            if (bikesInRange.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(bikesInRange, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     //ADDING NEW BIKE
     @PostMapping("/bikes")

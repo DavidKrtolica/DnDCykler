@@ -5,8 +5,8 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "order")
-public class Order {
+@Table(name = "order_info")
+public class OrderInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name="native", strategy = "native")
@@ -21,10 +21,10 @@ public class Order {
     //ANNOTATION FOR RELATIONSHIP
 
     // Constructor 1
-    public Order() {}
+    public OrderInfo() {}
 
     // Constructor 2
-    public Order(int customerId, int totalPrice) {
+    public OrderInfo(int customerId, int totalPrice) {
         this.customerId = customerId;
         this.totalPrice = totalPrice;
     }

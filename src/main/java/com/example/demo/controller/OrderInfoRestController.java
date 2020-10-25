@@ -18,7 +18,7 @@ public class OrderInfoRestController {
     OrderInfoRepository orderRepository;
 
     //GET MAPPING FOR FINDING ALL BIKE ORDERS
-    @GetMapping("/orderInfos")
+    @GetMapping("/orders")
     public ResponseEntity<List> getAllOrders(){
         try {
             List<OrderInfo> orderInfos = new ArrayList<>();
@@ -33,7 +33,7 @@ public class OrderInfoRestController {
     }
 
     //GET MAPPING FOR FINDING ORDERS BY ID
-    @GetMapping("/orderInfos/{id}")
+    @GetMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> getOrderById(@PathVariable("id") int id){
         try {
             Optional<OrderInfo> orderData = orderRepository.findById(id);
@@ -48,7 +48,7 @@ public class OrderInfoRestController {
     }
 
     //ADDING A NEW BIKE ORDER - POST MAPPING
-    @PostMapping("/orderInfos")
+    @PostMapping("/orders")
     public ResponseEntity<OrderInfo> createOrder(@RequestBody OrderInfo orderInfo){
         try {
             OrderInfo newOrderInfo = orderRepository.save(orderInfo);
@@ -59,7 +59,7 @@ public class OrderInfoRestController {
     }
 
     //DELETE MAPPING FOR DELETING ALL BIKE ORDERS
-    @DeleteMapping("/orderInfos")
+    @DeleteMapping("/orders")
     public ResponseEntity<OrderInfo> deleteAllOrders(){
         try {
             List<OrderInfo> orderInfos = orderRepository.findAll();
@@ -75,7 +75,7 @@ public class OrderInfoRestController {
     }
 
     //DELETE MAPPING FOR DELETING AN ORDER BY ITS ID
-    @DeleteMapping("/orderInfos/{id}")
+    @DeleteMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> deleteOrderById(@PathVariable("id") int id){
         try {
             Optional<OrderInfo> orderData = orderRepository.findById(id);
@@ -91,7 +91,7 @@ public class OrderInfoRestController {
     }
 
     //UPDATING BIKE ORDERS BY ID
-    @PutMapping("/orderInfos/{id}")
+    @PutMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> updateBikeOrderById(@PathVariable("id") int id, @RequestBody OrderInfo updatedOrderInfo){
         try {
             OrderInfo orderInfo = orderRepository.findById(id).get();

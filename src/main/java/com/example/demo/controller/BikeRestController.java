@@ -17,6 +17,7 @@ public class BikeRestController {
     @Autowired
     BikeRepository bikeRepository;
 
+    /*
     //FINDING ALL BIKES
     @GetMapping("/bikes")
     public ResponseEntity<List> getAllBikes() {
@@ -31,6 +32,7 @@ public class BikeRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    */
 
     //FINDING A BIKE BY ID
     @GetMapping("/bikes/{id}")
@@ -238,8 +240,47 @@ public class BikeRestController {
         }
     }
 
-
     //PAGINATION
+    @GetMapping("/bikes")
+    public ResponseEntity<List> getAllBikes(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
+        try {
+            List<Bike> bikes = new ArrayList<>();
+            List<Bike> pagedBikes = new ArrayList<>();
+            bikes = bikeRepository.findAll();
+            
+            int number = bikes.size() / size;
+
+            if (page < number || page >= 0) {
+                int start;
+                int end;
+
+                if (page == 0) {
+                    start = 0;
+                    end = size;
+
+                    for (int m = start; m < end; m++) {
+                        Bike temp = new Bike(bikes.get(m).getBikeId() ,bikes.get(m).getType(), bikes.get(m).getState(), bikes.get(m).getBrand(), bikes.get(m).getFrameSize(), bikes.get(m).getPrice());
+                        pagedBikes.add(temp);
+                        System.out.println(pagedBikes.size());
+                    }
+                    return new ResponseEntity<>(pagedBikes, HttpStatus.OK);
+
+                } else {
+                    start = (page - 1) * size;
+                    end = page * size;
+
+                    for (int n = start; n < end; n++) {
+                        pagedBikes.add(bikes.get(n));
+                    }
+
+                }
+                return new ResponseEntity<>(pagedBikes, HttpStatus.OK);
+            } else
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     //SORT A-Z
 

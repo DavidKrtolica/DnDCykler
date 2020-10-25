@@ -33,7 +33,8 @@ public class Bike {
     public Bike() {}
 
     // Constructor 2
-    public Bike(String type, String state, String brand, String frameSize, int price) {
+    public Bike(int bikeId, String type, String state, String brand, String frameSize, int price) {
+        this.bikeId = bikeId;
         this.type = type;
         this.state = state;
         this.brand = brand;

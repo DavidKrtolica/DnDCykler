@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Bike;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Customer;
-import com.example.demo.model.OrderInfo;
 import com.example.demo.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class CustomerRestController {
@@ -19,65 +17,61 @@ public class CustomerRestController {
     @Autowired
     CustomerRepository customerRepository;
 
+
     //GET MAPPING FOR FINDING ALL CUSTOMERS
     @GetMapping("/customers")
     public ResponseEntity<List> getAllCustomers(){
-        try {
+
             List<Customer> customers = new ArrayList<>();
             customers = customerRepository.findAll();
             if (customers.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(customers, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
-    //FINDING A CUSTOMER BY ID
+
+    //GET MAPPING FOR FINDING A CUSTOMER BY ID
     @GetMapping("/customers/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("id") int id) {
 
-        Optional<Customer> customerData = customerRepository.findById(id);
-
-        if (customerData.isPresent()) {
-            return new ResponseEntity<>(customerData.get(),HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find customer with ID = " + id));
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-    //ADDING NEW CUSTOMER
+
+    //POST MAPPING FOR ADDING NEW CUSTOMER
     @PostMapping("/customers")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        try {
+
             Customer newCustomer = customerRepository.save(customer);
             return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
-    //UPDATING CUSTOMERS BY ID
+
+    //PUT MAPPING FOR UPDATING CUSTOMERS BY ID
     @PutMapping("/customers/{id}")
     public ResponseEntity<Customer> updateCustomerById(@PathVariable("id") int id, @RequestBody Customer updatedCustomer){
-        try {
-            Customer customer = customerRepository.findById(id).get();
+
+            Customer customer = customerRepository.findById(id).
+                    orElseThrow(() -> new ResourceNotFoundException("Cannot find customer with ID = " + id));
+
             customer.setFirstName(updatedCustomer.getFirstName());
             customer.setLastName(updatedCustomer.getLastName());
             customer.setAddress(updatedCustomer.getAddress());
             customer.setPhoneNr(updatedCustomer.getPhoneNr());
             customer.setEmail(updatedCustomer.getEmail());
+
             final Customer customerFinal = customerRepository.save(customer);
             return new ResponseEntity<>(customerFinal, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
+
 
     //DELETE MAPPING FOR DELETING ALL CUSTOMERS
     @DeleteMapping("/customers")
     public ResponseEntity<Customer> deleteAllCustomers(){
-        try {
+
             List<Customer> customers = customerRepository.findAll();
             if (customers.isEmpty()){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -85,25 +79,17 @@ public class CustomerRestController {
                 customerRepository.deleteAll();
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
+
 
     //DELETE MAPPING FOR DELETING A CUSTOMER BY ITS ID
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<Customer> deleteCustomerById(@PathVariable("id") int id){
-        try {
-            Optional<Customer> customer = customerRepository.findById(id);
-            if (customer.isPresent()){
-                customerRepository.deleteById(customer.get().getCustomerId());
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+            Customer customer = customerRepository.findById(id).
+                    orElseThrow(() -> new ResourceNotFoundException("Cannot find customer with ID = " + id));
+            customerRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

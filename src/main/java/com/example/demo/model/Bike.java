@@ -90,4 +90,30 @@ public class Bike {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    // METHOD FOR SORTING
+    public int compareToByType(Object bike) {
+        return (((Bike) bike).getType()).compareTo(this.getType());
+    }
+
+    public int compareToByState(Object bike) {
+        return (((Bike) bike).getState()).compareTo(this.getState());
+    }
+
+    public int compareToByBrand(Object bike) {
+        return (((Bike) bike).getBrand()).compareTo(this.getBrand());
+    }
+
+    public int compareToByFrameSize(Object bike) {
+        return (((Bike) bike).getFrameSize()).compareTo(this.getFrameSize());
+    }
+
+    /*
+    public int compareToByPrice(Object bike) {
+        return (this.getPrice() &lt; ((Bike) bike).getPrice() ? -1 : (this.getPrice() == ((Bike) bike).getPrice() ? 0 : 1));
+    }
+
+     */
+
+
 }

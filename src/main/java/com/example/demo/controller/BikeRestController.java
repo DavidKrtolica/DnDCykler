@@ -7,9 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class BikeRestController {
@@ -32,7 +30,6 @@ public class BikeRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    */
 
     //FINDING A BIKE BY ID
     @GetMapping("/bikes/{id}")
@@ -136,6 +133,7 @@ public class BikeRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+     */
 
     //ADDING NEW BIKE
     @PostMapping("/bikes")
@@ -242,47 +240,83 @@ public class BikeRestController {
 
     //PAGINATION
     @GetMapping("/bikes")
-    public ResponseEntity<List> getAllBikes(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
+    public ResponseEntity<Map<String, Object>> getAllBikes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "brand") String filter,
+            @RequestParam(defaultValue = "desc") String sort) {
         try {
+            // INITIALIZE AND POPULATE ARRAYLIST FOR ALL BIKES, INITIALIZE ARRAYLIST FOR PAGED BIKES
             List<Bike> bikes = new ArrayList<>();
             List<Bike> pagedBikes = new ArrayList<>();
             bikes = bikeRepository.findAll();
             
             int number = bikes.size() / size;
 
-            if (page < number || page >= 0) {
-                int start;
-                int end;
+            // IF THE CORRECT NUMBER OF PAGE IS ENTERED, IT STARTS THE LOOP
+            if (page >= 0 && page <= number) {
+                int start = page * size;
+                ;
+                int end = (page + 1) * size;
 
-                if (page == 0) {
-                    start = 0;
-                    end = size;
+                // POPULATE NEW ARRAY WHICH IS PUSHED AS PAGE
+                for (int n = start; n < end; n++) {
+                    pagedBikes.add(bikes.get(n));
+                }
 
-                    for (int m = start; m < end; m++) {
-                        Bike temp = new Bike(bikes.get(m).getBikeId() ,bikes.get(m).getType(), bikes.get(m).getState(), bikes.get(m).getBrand(), bikes.get(m).getFrameSize(), bikes.get(m).getPrice());
-                        pagedBikes.add(temp);
-                        System.out.println(pagedBikes.size());
+                // SORTING METHOD BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
+                if (filter.equals("type")) {
+                    if (sort.equals("asc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByType);
+                    } else {
+                        Collections.sort(pagedBikes, Bike::compareToByType);
+                        Collections.reverse(pagedBikes);
                     }
-                    return new ResponseEntity<>(pagedBikes, HttpStatus.OK);
 
-                } else {
-                    start = (page - 1) * size;
-                    end = page * size;
-
-                    for (int n = start; n < end; n++) {
-                        pagedBikes.add(bikes.get(n));
+                } else if (filter.equals("state")){
+                    if (sort.equals("asc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByState);
+                    } else {
+                        Collections.sort(pagedBikes, Bike::compareToByState);
+                        Collections.reverse(pagedBikes);
                     }
+
+                } else if (filter.equals("brand")) {
+                    if (sort.equals("asc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByBrand);
+                    } else {
+                        Collections.sort(pagedBikes, Bike::compareToByBrand);
+                        Collections.reverse(pagedBikes);
+                    }
+
+                } else if(filter.equals("frameSize")) {
+                    if (sort.equals("asc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByFrameSize);
+                    } else if (sort.equals("desc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByFrameSize);
+                        Collections.reverse(pagedBikes);
+                    }
+                }
+
+                // NEED TO DEFINE "compareToWithPrice" METHOD IN THE "Bike.java" CLASS
+                /*
+                 else if(filter.equals("price")) {
 
                 }
-                return new ResponseEntity<>(pagedBikes, HttpStatus.OK);
+                */
+
+                // MAP WHICH REPRESENTS VALUE IN THE RETURNED QUERY
+                Map<String, Object> response = new HashMap<>();
+                response.put("Bikes", pagedBikes);
+                response.put("currentPage", page);
+                response.put("totalItems", bikes.size());
+                response.put("totalPages", number);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    //SORT A-Z
-
-    //SORT Z-A
 }

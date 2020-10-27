@@ -108,12 +108,12 @@ public class Bike {
         return (((Bike) bike).getFrameSize()).compareTo(this.getFrameSize());
     }
 
-    /*
     public int compareToByPrice(Object bike) {
-        return (this.getPrice() &lt; ((Bike) bike).getPrice() ? -1 : (this.getPrice() == ((Bike) bike).getPrice() ? 0 : 1));
+        int number1 = this.getPrice();
+        int number2 = ((Bike) bike).getPrice();
+        // return (((Bike) bike).getPrice()).(this.getPrice());
+        return Integer.compare(number1, number2);
     }
-
-     */
 
 
 }

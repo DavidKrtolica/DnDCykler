@@ -244,14 +244,65 @@ public class BikeRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "brand") String filter,
-            @RequestParam(defaultValue = "desc") String sort)
-            // @RequestParam(required = false) String parameter     /bikes?brand=Trek
+            @RequestParam(defaultValue = "desc") String sort,
+            @RequestParam(required = false) String parameter,
+            @RequestParam(required = false) int min,
+            @RequestParam(required = false) int max)
     {
         try {
             // INITIALIZE AND POPULATE AN ARRAYLIST FOR ALL BIKES,ALSO INITIALIZE AN ARRAYLIST FOR PAGED BIKES
+            List<Bike> sortedBikesFromDB = new ArrayList<>();
             List<Bike> bikes = new ArrayList<>();
             List<Bike> pagedBikes = new ArrayList<>();
-            bikes = bikeRepository.findAll();
+            System.out.println("Just before populating loop.");
+
+            // BEGINNING OF SEARCHING BY PARAMETER VALUE
+            // CHECKS IF THE PARAMETER IS OF VALUE "type"
+            if (parameter != null && sortedBikesFromDB.size() == 0) {
+                System.out.println("You are in the populating loop.");
+                sortedBikesFromDB = bikeRepository.findByTypeContaining(parameter);
+                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
+            }
+            // CHECKS IF THE PARAMETER IS OF VALUE "state"
+            if (parameter != null && sortedBikesFromDB.size() == 0) {
+                sortedBikesFromDB = bikeRepository.findByStateContaining(parameter);
+                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
+            }
+            // CHECKS IF THE PARAMETER IS OF VALUE "brand"
+            if (parameter != null && sortedBikesFromDB.size() == 0) {
+                sortedBikesFromDB = bikeRepository.findByBrandContaining(parameter);
+                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
+            }
+            // CHECKS IF THE PARAMETER IS OF VALUE "frameSize"
+            if (parameter != null && sortedBikesFromDB.size() == 0) {
+                sortedBikesFromDB = bikeRepository.findByFrameSizeContaining(parameter);
+                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
+            }
+
+            // IF NO PARAMETER WAS INPUTTED, THEN PASS ALL THE BICYCLES IN CASE OF SELECTING THE PRICE RANGE
+            if (parameter == null && sortedBikesFromDB.size() == 0) {
+                sortedBikesFromDB = bikeRepository.findAll();;
+            }
+
+            // MIN and MAX - PRICE RANGE
+            if (min != 0 && max != 0) {
+                // CHECKS THE PRICE OF THE BICYCLE AND ADDS IT TO THE ARRAY WHICH CONSISTS OF ALL BICYCLES THAT PASS THE MIN-MAX TEST
+                int priceTest;
+                for (int i = 0; i < sortedBikesFromDB.size(); i++) {
+                    priceTest = sortedBikesFromDB.get(i).getPrice();
+                    if (priceTest >= min && priceTest <= max) {
+                        bikes.add(sortedBikesFromDB.get(i));
+                    }
+                }
+            } else{
+                // !!! IF THERE IS NO PARAMETER WRITTEN OR PRICE RANGE, POPULATION OF THE ARRAYLIST IS DONE NOW !!!
+                bikes = bikeRepository.findAll();
+            }
+
+            // IN CASE SOMETHING WENT WRONG WITH DATABASE CONNECTION OR THERE IS NO BIKE ENTITIES IN THE DATABASE
+            if (bikes.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
 
             // USE THIS TO CHECK THE INPUTTED PAGE AND SIZE
             // EXAMPLE: We have 8 objects in our database. We want to see 6 objects per page. That means, there are 2 pages.
@@ -315,16 +366,14 @@ public class BikeRestController {
                     }
                 }
 
-                // NEED TO DEFINE "compareToWithPrice" METHOD IN THE "Bike.java" CLASS
-                /*
                  else if(filter.equals("price")) {
-
+                    if (sort.equals("asc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByPrice);
+                    } else if (sort.equals("desc")) {
+                        Collections.sort(pagedBikes, Bike::compareToByPrice);
+                        Collections.reverse(pagedBikes);
+                    }
                 }
-                */
-
-                System.out.println("Done with sorting");
-
-                System.out.println("Right size !");
 
                 // MAP WHICH REPRESENTS VALUES AND IS RETURNED
                 Map<String, Object> response = new HashMap<>();

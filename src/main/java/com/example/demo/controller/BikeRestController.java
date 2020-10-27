@@ -244,27 +244,44 @@ public class BikeRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "brand") String filter,
-            @RequestParam(defaultValue = "desc") String sort) {
+            @RequestParam(defaultValue = "desc") String sort)
+            // @RequestParam(required = false) String parameter     /bikes?brand=Trek
+    {
         try {
-            // INITIALIZE AND POPULATE ARRAYLIST FOR ALL BIKES, INITIALIZE ARRAYLIST FOR PAGED BIKES
+            // INITIALIZE AND POPULATE AN ARRAYLIST FOR ALL BIKES,ALSO INITIALIZE AN ARRAYLIST FOR PAGED BIKES
             List<Bike> bikes = new ArrayList<>();
             List<Bike> pagedBikes = new ArrayList<>();
             bikes = bikeRepository.findAll();
-            
+
+            // USE THIS TO CHECK THE INPUTTED PAGE AND SIZE
+            // EXAMPLE: We have 8 objects in our database. We want to see 6 objects per page. That means, there are 2 pages.
+            // The 1. page has 6 objects. The 2. page has 2 objects. There should not be page number greater then 2 then.
             int number = bikes.size() / size;
 
-            // IF THE CORRECT NUMBER OF PAGE IS ENTERED, IT STARTS THE LOOP
+            // IF-STATEMENT TO CHECK THE ENTERED PAGE AND SIZE
             if (page >= 0 && page <= number) {
-                int start = page * size;
-                ;
-                int end = (page + 1) * size;
+                // INITIALIZE THE VARIABLES THAT WILL BE NEEDED THROUGHOUT THE METHOD RUN
+                // EXAMPLE: If we want to see items on the 0. page, we should start from the 1. item
+                // until the 6. item.(6 items per page)
+                int start = page * size;        // start = 0 * 6; -> 0  STARTING POINT
+                int end = (page + 1) * size;    // end = (0 + 1) * 6; -> 6 ENDING POINT
 
-                // POPULATE NEW ARRAY WHICH IS PUSHED AS PAGE
+                // INITIALIZE THE VARIABLES THAT WE WILL NEED IN THE FOR-LOOP, BUT FOR THE LAST PAGE
+                // (IF THERE IS NO CORRESPONDING NUMBER OF OBJECTS) ON THE LAST OBJECT
+                // EXAMPLE: There are 8 objects in the database. The 1. page has 6 objects. The 2. page has 2 objects.
+                int lastPageStart = bikes.size() - end;        // For page 0, result is 2 (8 - 6). For page 1, result is -4 (8 - 12).
+                int lastPageEnd = bikes.size();              // This will always stop the last page.
+
+                // FOR-LOOP TO POPULATE AN ARRAY THAT WILL BE PUSHED AS A PAGE
                 for (int n = start; n < end; n++) {
+                    // IF-STATEMENT THAT WILL BREAK WHEN THE LAST ITEM ON THE LAST PAGE IS GOTTEN
+                    if (lastPageStart < 0 && n == lastPageEnd) {
+                        break;
+                    }
                     pagedBikes.add(bikes.get(n));
                 }
 
-                // SORTING METHOD BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
+                // SORTING METHOD WHICH SORTS BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
                 if (filter.equals("type")) {
                     if (sort.equals("asc")) {
                         Collections.sort(pagedBikes, Bike::compareToByType);
@@ -273,7 +290,7 @@ public class BikeRestController {
                         Collections.reverse(pagedBikes);
                     }
 
-                } else if (filter.equals("state")){
+                } else if (filter.equals("state")) {
                     if (sort.equals("asc")) {
                         Collections.sort(pagedBikes, Bike::compareToByState);
                     } else {
@@ -289,7 +306,7 @@ public class BikeRestController {
                         Collections.reverse(pagedBikes);
                     }
 
-                } else if(filter.equals("frameSize")) {
+                } else if (filter.equals("frameSize")) {
                     if (sort.equals("asc")) {
                         Collections.sort(pagedBikes, Bike::compareToByFrameSize);
                     } else if (sort.equals("desc")) {
@@ -305,16 +322,20 @@ public class BikeRestController {
                 }
                 */
 
-                // MAP WHICH REPRESENTS VALUE IN THE RETURNED QUERY
+                System.out.println("Done with sorting");
+
+                System.out.println("Right size !");
+
+                // MAP WHICH REPRESENTS VALUES AND IS RETURNED
                 Map<String, Object> response = new HashMap<>();
                 response.put("Bikes", pagedBikes);
                 response.put("currentPage", page);
                 response.put("totalItems", bikes.size());
                 response.put("totalPages", number);
 
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

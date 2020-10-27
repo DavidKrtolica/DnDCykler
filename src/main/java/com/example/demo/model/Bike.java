@@ -91,7 +91,7 @@ public class Bike {
         this.price = price;
     }
 
-    // METHOD FOR SORTING
+    // METHODS FOR SORTING (.sort)
     public int compareToByType(Object bike) {
         return (((Bike) bike).getType()).compareTo(this.getType());
     }

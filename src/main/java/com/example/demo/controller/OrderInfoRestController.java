@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.Customer;
 import com.example.demo.model.OrderInfo;
 import com.example.demo.repository.OrderInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

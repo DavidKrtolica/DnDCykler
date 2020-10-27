@@ -98,8 +98,9 @@ public class CustomerRestController {
     //GET MAPPING WITH PAGINATION & SORTING TOGETHER - FINAL VERSION
     @GetMapping("/customers")
     public ResponseEntity<Map<String, Object>> getCustomersPageSorted(
+            @RequestParam(required = false) String firstName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "4") int size,
             @RequestParam(defaultValue = "customerId,desc") String[] sort){
 
         List<Sort.Order> orders = new ArrayList<>();
@@ -113,10 +114,16 @@ public class CustomerRestController {
             //sort=[field,direction]
             orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
         }
-        Pageable paging = PageRequest.of(page, size, Sort.by(orders));
-        Page<Customer> pageCustomers = customerRepository.findAll(paging);
-        List<Customer> customers = pageCustomers.getContent();
 
+        Pageable paging = PageRequest.of(page, size, Sort.by(orders));
+
+        Page<Customer> pageCustomers;
+        if (firstName == null){
+            pageCustomers = customerRepository.findAll(paging);
+        } else {
+            pageCustomers = customerRepository.findByFirstNameContaining(firstName, paging);
+        }
+        List<Customer> customers = pageCustomers.getContent();
         if (customers.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

@@ -24,21 +24,6 @@ public class OrderInfoRestController {
     @Autowired
     OrderInfoRepository orderRepository;
 
-    //GET MAPPING FOR FINDING ALL BIKE ORDERS
-    /*@GetMapping("/orders")
-    public ResponseEntity<List> getAllOrders(){
-        try {
-            List<OrderInfo> orderInfos = new ArrayList<>();
-            orderInfos = orderRepository.findAll();
-            if (orderInfos.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(orderInfos, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
-
     //method retrieving the Sort.Direction enum
     private Sort.Direction getSortDirection(String direction){
         if (direction.equals("asc")) {
@@ -49,6 +34,7 @@ public class OrderInfoRestController {
         return Sort.Direction.ASC;
     }
 
+    //GET MAPPING WITH PAGINATION & SORTING TOGETHER - FINAL VERSION
     @GetMapping("/orders")
     public ResponseEntity<Map<String, Object>> getOrdersPageSorted(
             @RequestParam(defaultValue = "0") int page,
@@ -83,6 +69,7 @@ public class OrderInfoRestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     //GET MAPPING FOR FINDING ORDERS BY ID
     @GetMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> getOrderById(@PathVariable("id") int id) {
@@ -92,12 +79,14 @@ public class OrderInfoRestController {
 
     }
 
+
     //ADDING A NEW BIKE ORDER - POST MAPPING
     @PostMapping("/orders")
     public ResponseEntity<OrderInfo> createOrder(@RequestBody OrderInfo orderInfo){
             OrderInfo newOrderInfo = orderRepository.save(orderInfo);
             return new ResponseEntity<>(newOrderInfo, HttpStatus.CREATED);
     }
+
 
     //DELETE MAPPING FOR DELETING ALL BIKE ORDERS
     @DeleteMapping("/orders")
@@ -111,6 +100,7 @@ public class OrderInfoRestController {
             }
     }
 
+
     //DELETE MAPPING FOR DELETING AN ORDER BY ITS ID
     @DeleteMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> deleteOrderById(@PathVariable("id") int id){
@@ -119,6 +109,7 @@ public class OrderInfoRestController {
             orderRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     //UPDATING BIKE ORDERS BY ID
     @PutMapping("/orders/{id}")

@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.exception.MethodNotAllowedException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Bike;
 import com.example.demo.repository.BikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,11 +152,11 @@ public class BikeRestController {
     @PutMapping("/bikes/{id}")
     public ResponseEntity<Bike> updateBikeById(@PathVariable("id") int id, @RequestBody Bike updatedBike) {
         try {
-            // Initialize boolean variable and temporary int variable
+            // INITIALIZE BOOLEAN AND TEMPORARY INT VARIABLE
             boolean condition = false;
             int temp = 0;
 
-            // Initialize ArrayList and populate with entities from database
+            // INITIALIZE ARRAYLIST AND POPULATE WITH ENTITIES FROM DATABASE
             List<Bike> bikes = new ArrayList<>();
             bikes = bikeRepository.findAll();
 
@@ -162,8 +164,8 @@ public class BikeRestController {
 
                 temp = bikes.get(i).getBikeId();
 
-                if(id == temp) {
-                    condition=true;
+                if (id == temp) {
+                    condition = true;
                 }
             }
 
@@ -180,61 +182,35 @@ public class BikeRestController {
                 final Bike bikeFinal = bikeRepository.save(bike);
 
                 return new ResponseEntity<>(bikeFinal, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //DELETING A BIKE BY ID
+        //DELETING A BIKE BY ID
     @DeleteMapping("/bikes/{id}")
     public ResponseEntity<Bike> deleteBikeById(@PathVariable("id") int id) {
-        try {
-            // Initialize boolean variable and temporary int variable
-            boolean condition = false;
-            int temp = 0;
-            int ID = 0;
-
-            // Initialize ArrayList and populate with entities from database
-            List<Bike> bikes = new ArrayList<>();
-            bikes = bikeRepository.findAll();
-
-            for (int i = 0; i < bikes.size(); i++) {
-
-                temp = bikes.get(i).getBikeId();
-
-                if(id == temp) {
-                    ID = temp;
-                    condition=true;
-                }
-            }
-
-            if (condition = true) {
-                bikeRepository.deleteById(ID);
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        Optional<Bike> bike = bikeRepository.findById(id);
+        // CHECKS IF THE ID IS FOUND - IF NOT, THROWS AN EXCEPTION
+        if (!bike.isPresent()) {
+            throw new ResourceNotFoundException("Bike with written ID doesn't exist. Please, try again.");
         }
+        // DELETE FOUND BIKE
+        bikeRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //DELETE ALL BIKES
     @DeleteMapping("/bikes")
     public ResponseEntity<Bike> deleteAllBikes() {
-        try {
-            List<Bike> bikes = bikeRepository.findAll();
-            if (bikes.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                bikeRepository.deleteAll();
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        List<Bike> bikes = bikeRepository.findAll();
+        if (bikes.isEmpty()) {
+            throw new MethodNotAllowedException("There are 0 Bikes. You can not delete.");
+        } else {
+            bikeRepository.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
         }
     }
 
@@ -246,37 +222,32 @@ public class BikeRestController {
             @RequestParam(defaultValue = "brand") String filter,
             @RequestParam(defaultValue = "desc") String sort,
             @RequestParam(required = false) String parameter,
-            @RequestParam(required = false) int min,
-            @RequestParam(required = false) int max)
+            @RequestParam(required = false) Integer min,
+            @RequestParam(required = false) Integer max)
     {
         try {
             // INITIALIZE AND POPULATE AN ARRAYLIST FOR ALL BIKES,ALSO INITIALIZE AN ARRAYLIST FOR PAGED BIKES
             List<Bike> sortedBikesFromDB = new ArrayList<>();
             List<Bike> bikes = new ArrayList<>();
             List<Bike> pagedBikes = new ArrayList<>();
-            System.out.println("Just before populating loop.");
 
             // BEGINNING OF SEARCHING BY PARAMETER VALUE
             // CHECKS IF THE PARAMETER IS OF VALUE "type"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 System.out.println("You are in the populating loop.");
                 sortedBikesFromDB = bikeRepository.findByTypeContaining(parameter);
-                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
             }
             // CHECKS IF THE PARAMETER IS OF VALUE "state"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 sortedBikesFromDB = bikeRepository.findByStateContaining(parameter);
-                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
             }
             // CHECKS IF THE PARAMETER IS OF VALUE "brand"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 sortedBikesFromDB = bikeRepository.findByBrandContaining(parameter);
-                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
             }
             // CHECKS IF THE PARAMETER IS OF VALUE "frameSize"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 sortedBikesFromDB = bikeRepository.findByFrameSizeContaining(parameter);
-                System.out.println("Bikes that match the criteria: " + sortedBikesFromDB.size());
             }
 
             // IF NO PARAMETER WAS INPUTTED, THEN PASS ALL THE BICYCLES IN CASE OF SELECTING THE PRICE RANGE
@@ -284,8 +255,8 @@ public class BikeRestController {
                 sortedBikesFromDB = bikeRepository.findAll();;
             }
 
-            // MIN and MAX - PRICE RANGE
-            if (min != 0 && max != 0) {
+            // MIN & MAX - PRICE RANGE
+            if (min != null && max != null) {
                 // CHECKS THE PRICE OF THE BICYCLE AND ADDS IT TO THE ARRAY WHICH CONSISTS OF ALL BICYCLES THAT PASS THE MIN-MAX TEST
                 int priceTest;
                 for (int i = 0; i < sortedBikesFromDB.size(); i++) {
@@ -301,7 +272,7 @@ public class BikeRestController {
 
             // IN CASE SOMETHING WENT WRONG WITH DATABASE CONNECTION OR THERE IS NO BIKE ENTITIES IN THE DATABASE
             if (bikes.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                throw new ResourceNotFoundException("There are no Bikes.");
             }
 
             // USE THIS TO CHECK THE INPUTTED PAGE AND SIZE
@@ -384,7 +355,7 @@ public class BikeRestController {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("Oops, something went wrong. There are no Bikes that match your criteria.");
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

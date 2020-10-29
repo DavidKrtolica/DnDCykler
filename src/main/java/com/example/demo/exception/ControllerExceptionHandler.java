@@ -30,4 +30,14 @@ public class ControllerExceptionHandler {
                 wr.getDescription(false));
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(MethodNotAllowedException.class)
+    public ResponseEntity<ErrorMessage> noContentExceptionHandler(MethodNotAllowedException e, WebRequest wr) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.METHOD_NOT_ALLOWED.value(),
+                new Date(),
+                e.getMessage(),
+                wr.getDescription(false));
+        return new ResponseEntity<>(message, HttpStatus.METHOD_NOT_ALLOWED);
+    }
 }

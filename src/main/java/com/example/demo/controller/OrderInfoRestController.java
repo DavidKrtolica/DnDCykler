@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.OrderBike;
 import com.example.demo.model.OrderInfo;
+import com.example.demo.repository.OrderBikeRepository;
 import com.example.demo.repository.OrderInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -23,6 +22,9 @@ public class OrderInfoRestController {
 
     @Autowired
     OrderInfoRepository orderRepository;
+
+    @Autowired
+    OrderBikeRepository orderBikeRepository;
 
     //method retrieving the Sort.Direction enum
     private Sort.Direction getSortDirection(String direction){
@@ -38,7 +40,7 @@ public class OrderInfoRestController {
     @GetMapping("/orders")
     public ResponseEntity<Map<String, Object>> getOrdersPageSorted(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderId,desc") String[] sort){
 
         List<Sort.Order> orders = new ArrayList<>();
@@ -83,8 +85,15 @@ public class OrderInfoRestController {
     //ADDING A NEW BIKE ORDER - POST MAPPING
     @PostMapping("/orders")
     public ResponseEntity<OrderInfo> createOrder(@RequestBody OrderInfo orderInfo){
-            OrderInfo newOrderInfo = orderRepository.save(orderInfo);
-            return new ResponseEntity<>(newOrderInfo, HttpStatus.CREATED);
+        OrderInfo newOrderInfo = orderRepository.save(orderInfo);
+
+        Collection<OrderBike> orderBikes = orderInfo.getOrderBikesByOrderId();
+        for (OrderBike orderBike : orderBikes){
+            orderBike.setOrderId(newOrderInfo.getOrderId());
+            orderBikeRepository.save(orderBike);
+        }
+
+        return new ResponseEntity<>(newOrderInfo, HttpStatus.CREATED);
     }
 
 
@@ -116,7 +125,7 @@ public class OrderInfoRestController {
     public ResponseEntity<OrderInfo> updateOrderById(@PathVariable("id") int id, @RequestBody OrderInfo updatedOrderInfo){
             OrderInfo orderInfo = orderRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Cannot find order with ID = " + id));
-            orderInfo.setCustomerId(updatedOrderInfo.getCustomerId());
+            orderInfo.setCustomerByCustomerId(updatedOrderInfo.getCustomerByCustomerId());
             orderInfo.setTotalPrice(updatedOrderInfo.getTotalPrice());
             final OrderInfo orderInfoFinal = orderRepository.save(orderInfo);
             return new ResponseEntity<>(orderInfoFinal, HttpStatus.OK);

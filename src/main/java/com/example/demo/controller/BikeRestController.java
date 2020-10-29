@@ -243,7 +243,7 @@ public class BikeRestController {
     public ResponseEntity<Map<String, Object>> getAllBikes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
-            @RequestParam(defaultValue = "brand") String filter,
+            @RequestParam(defaultValue = "bikeId") String filter,
             @RequestParam(defaultValue = "desc") String sort)
             // @RequestParam(required = false) String parameter     /bikes?brand=Trek
     {

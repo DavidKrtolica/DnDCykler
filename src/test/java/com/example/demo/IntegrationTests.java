@@ -1,11 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.model.Bike;
-import com.example.demo.model.Customer;
-import com.example.demo.model.OrderInfo;
 import com.example.demo.repository.BikeRepository;
-import com.example.demo.repository.CustomerRepository;
-import com.example.demo.repository.OrderInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

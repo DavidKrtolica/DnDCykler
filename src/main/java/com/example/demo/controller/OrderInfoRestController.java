@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.Customer;
+import com.example.demo.model.OrderBike;
 import com.example.demo.model.OrderInfo;
+import com.example.demo.repository.OrderBikeRepository;
 import com.example.demo.repository.OrderInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -25,20 +23,8 @@ public class OrderInfoRestController {
     @Autowired
     OrderInfoRepository orderRepository;
 
-    //GET MAPPING FOR FINDING ALL BIKE ORDERS
-    /*@GetMapping("/orders")
-    public ResponseEntity<List> getAllOrders(){
-        try {
-            List<OrderInfo> orderInfos = new ArrayList<>();
-            orderInfos = orderRepository.findAll();
-            if (orderInfos.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(orderInfos, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
+    @Autowired
+    OrderBikeRepository orderBikeRepository;
 
     //method retrieving the Sort.Direction enum
     private Sort.Direction getSortDirection(String direction){
@@ -50,10 +36,11 @@ public class OrderInfoRestController {
         return Sort.Direction.ASC;
     }
 
+    //GET MAPPING WITH PAGINATION & SORTING TOGETHER - FINAL VERSION
     @GetMapping("/orders")
     public ResponseEntity<Map<String, Object>> getOrdersPageSorted(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderId,desc") String[] sort){
 
         List<Sort.Order> orders = new ArrayList<>();
@@ -84,6 +71,7 @@ public class OrderInfoRestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     //GET MAPPING FOR FINDING ORDERS BY ID
     @GetMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> getOrderById(@PathVariable("id") int id) {
@@ -93,12 +81,21 @@ public class OrderInfoRestController {
 
     }
 
+
     //ADDING A NEW BIKE ORDER - POST MAPPING
     @PostMapping("/orders")
     public ResponseEntity<OrderInfo> createOrder(@RequestBody OrderInfo orderInfo){
-            OrderInfo newOrderInfo = orderRepository.save(orderInfo);
-            return new ResponseEntity<>(newOrderInfo, HttpStatus.CREATED);
+        OrderInfo newOrderInfo = orderRepository.save(orderInfo);
+
+        Collection<OrderBike> orderBikes = orderInfo.getOrderBikesByOrderId();
+        for (OrderBike orderBike : orderBikes){
+            orderBike.setOrderId(newOrderInfo.getOrderId());
+            orderBikeRepository.save(orderBike);
+        }
+
+        return new ResponseEntity<>(newOrderInfo, HttpStatus.CREATED);
     }
+
 
     //DELETE MAPPING FOR DELETING ALL BIKE ORDERS
     @DeleteMapping("/orders")
@@ -112,6 +109,7 @@ public class OrderInfoRestController {
             }
     }
 
+
     //DELETE MAPPING FOR DELETING AN ORDER BY ITS ID
     @DeleteMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> deleteOrderById(@PathVariable("id") int id){
@@ -121,12 +119,13 @@ public class OrderInfoRestController {
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
     //UPDATING BIKE ORDERS BY ID
     @PutMapping("/orders/{id}")
     public ResponseEntity<OrderInfo> updateOrderById(@PathVariable("id") int id, @RequestBody OrderInfo updatedOrderInfo){
             OrderInfo orderInfo = orderRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Cannot find order with ID = " + id));
-            orderInfo.setCustomerId(updatedOrderInfo.getCustomerId());
+            orderInfo.setCustomerByCustomerId(updatedOrderInfo.getCustomerByCustomerId());
             orderInfo.setTotalPrice(updatedOrderInfo.getTotalPrice());
             final OrderInfo orderInfoFinal = orderRepository.save(orderInfo);
             return new ResponseEntity<>(orderInfoFinal, HttpStatus.OK);

@@ -1,37 +1,23 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
-@Table(name = "customer")
 public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name="native", strategy = "native")
     private int customerId;
-
-    @Column(name = "first_name", nullable = false)
     private String firstName;
-
-    @Column(name = "last_name", nullable = false)
     private String lastName;
-
-    @Column(name = "address", nullable = false)
     private String address;
-
-    @Column(name = "phone_nr", nullable = false)
     private String phoneNr;
-
-    @Column(name = "email")
     private String email;
+    private Collection<OrderInfo> orderInfosByCustomerId;
 
-    //ANNOTATION FOR RELATIONSHIP
-
-    public Customer(){}
-
-    public Customer(String firstName, String lastName, String address, String phoneNr, String email) {
+    public Customer(int customerId, String firstName, String lastName, String address, String phoneNr, String email) {
+        this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -39,6 +25,12 @@ public class Customer {
         this.email = email;
     }
 
+    public Customer(){}
+
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name="native", strategy = "native")
+    @Id
+    @Column(name = "customer_id", nullable = false)
     public int getCustomerId() {
         return customerId;
     }
@@ -47,6 +39,8 @@ public class Customer {
         this.customerId = customerId;
     }
 
+    @Basic
+    @Column(name = "first_name", nullable = false, length = 45)
     public String getFirstName() {
         return firstName;
     }
@@ -55,6 +49,8 @@ public class Customer {
         this.firstName = firstName;
     }
 
+    @Basic
+    @Column(name = "last_name", nullable = false, length = 45)
     public String getLastName() {
         return lastName;
     }
@@ -63,6 +59,8 @@ public class Customer {
         this.lastName = lastName;
     }
 
+    @Basic
+    @Column(name = "address", nullable = false, length = 45)
     public String getAddress() {
         return address;
     }
@@ -71,6 +69,8 @@ public class Customer {
         this.address = address;
     }
 
+    @Basic
+    @Column(name = "phone_nr", nullable = false, length = 45)
     public String getPhoneNr() {
         return phoneNr;
     }
@@ -79,11 +79,51 @@ public class Customer {
         this.phoneNr = phoneNr;
     }
 
+    @Basic
+    @Column(name = "email", nullable = true, length = 45)
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        if (customerId != customer.customerId) return false;
+        if (firstName != null ? !firstName.equals(customer.firstName) : customer.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(customer.lastName) : customer.lastName != null) return false;
+        if (address != null ? !address.equals(customer.address) : customer.address != null) return false;
+        if (phoneNr != null ? !phoneNr.equals(customer.phoneNr) : customer.phoneNr != null) return false;
+        if (email != null ? !email.equals(customer.email) : customer.email != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = customerId;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (phoneNr != null ? phoneNr.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        return result;
+    }
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "customerByCustomerId")
+    public Collection<OrderInfo> getOrderInfosByCustomerId() {
+        return orderInfosByCustomerId;
+    }
+
+    public void setOrderInfosByCustomerId(Collection<OrderInfo> orderInfosByCustomerId) {
+        this.orderInfosByCustomerId = orderInfosByCustomerId;
     }
 }

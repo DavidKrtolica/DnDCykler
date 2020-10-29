@@ -1,38 +1,21 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
-@Table(name= "bike")
 public class Bike {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name="native", strategy = "native")
     private int bikeId;
-
-    @Column(name = "type", nullable = false)
     private String type;
-
-    @Column(name = "state", nullable = false)
     private String state;
-
-    @Column(name = "brand", nullable = false)
     private String brand;
-
-    @Column(name = "frame_size", nullable = false)
     private String frameSize;
-
-    @Column(name = "price", nullable = false)
     private int price;
+    private Collection<OrderBike> orderBikesByBikeId;
 
-    //ADDING THE BIKE ORDER ANNOTATION/RELATIONSHIP
-
-    // Constructor 1
-    public Bike() {}
-
-    // Constructor 2
     public Bike(int bikeId, String type, String state, String brand, String frameSize, int price) {
         this.bikeId = bikeId;
         this.type = type;
@@ -42,7 +25,12 @@ public class Bike {
         this.price = price;
     }
 
-    // Getters and Setters
+    public Bike(){}
+
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name="native", strategy = "native")
+    @Id
+    @Column(name = "bike_id", nullable = false)
     public int getBikeId() {
         return bikeId;
     }
@@ -51,6 +39,8 @@ public class Bike {
         this.bikeId = bikeId;
     }
 
+    @Basic
+    @Column(name = "type", nullable = false, length = 45)
     public String getType() {
         return type;
     }
@@ -59,6 +49,8 @@ public class Bike {
         this.type = type;
     }
 
+    @Basic
+    @Column(name = "state", nullable = false, length = 45)
     public String getState() {
         return state;
     }
@@ -67,6 +59,8 @@ public class Bike {
         this.state = state;
     }
 
+    @Basic
+    @Column(name = "brand", nullable = false, length = 45)
     public String getBrand() {
         return brand;
     }
@@ -75,6 +69,8 @@ public class Bike {
         this.brand = brand;
     }
 
+    @Basic
+    @Column(name = "frame_size", nullable = false, length = 45)
     public String getFrameSize() {
         return frameSize;
     }
@@ -83,6 +79,8 @@ public class Bike {
         this.frameSize = frameSize;
     }
 
+    @Basic
+    @Column(name = "price", nullable = false)
     public int getPrice() {
         return price;
     }
@@ -90,6 +88,45 @@ public class Bike {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bike bike = (Bike) o;
+
+        if (bikeId != bike.bikeId) return false;
+        if (price != bike.price) return false;
+        if (type != null ? !type.equals(bike.type) : bike.type != null) return false;
+        if (state != null ? !state.equals(bike.state) : bike.state != null) return false;
+        if (brand != null ? !brand.equals(bike.brand) : bike.brand != null) return false;
+        if (frameSize != null ? !frameSize.equals(bike.frameSize) : bike.frameSize != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = bikeId;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (brand != null ? brand.hashCode() : 0);
+        result = 31 * result + (frameSize != null ? frameSize.hashCode() : 0);
+        result = 31 * result + price;
+        return result;
+    }
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "bikeByBikeId")
+    public Collection<OrderBike> getOrderBikesByBikeId() {
+        return orderBikesByBikeId;
+    }
+
+    public void setOrderBikesByBikeId(Collection<OrderBike> orderBikesByBikeId) {
+        this.orderBikesByBikeId = orderBikesByBikeId;
+    }
+
 
     // METHODS FOR SORTING (.sort)
     public int compareToByType(Object bike) {
@@ -114,6 +151,5 @@ public class Bike {
         // return (((Bike) bike).getPrice()).(this.getPrice());
         return Integer.compare(number1, number2);
     }
-
 
 }

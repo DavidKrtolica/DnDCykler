@@ -8,7 +8,7 @@ public class OrderBikePK implements Serializable {
     private int orderId;
     private int bikeId;
 
-    @Column(name = "order_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "order_id", nullable = false)
     @Id
     public int getOrderId() {
         return orderId;
@@ -18,7 +18,7 @@ public class OrderBikePK implements Serializable {
         this.orderId = orderId;
     }
 
-    @Column(name = "bike_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "bike_id", nullable = false)
     @Id
     public int getBikeId() {
         return bikeId;

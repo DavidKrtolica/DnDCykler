@@ -14,7 +14,7 @@ public class OrderBike {
     private Bike bikeByBikeId;
 
     @Id
-    @Column(name = "order_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "order_id", nullable = false)
     public int getOrderId() {
         return orderId;
     }
@@ -24,7 +24,7 @@ public class OrderBike {
     }
 
     @Id
-    @Column(name = "bike_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "bike_id", nullable = false)
     public int getBikeId() {
         return bikeId;
     }

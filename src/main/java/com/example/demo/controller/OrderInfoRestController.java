@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.Customer;
 import com.example.demo.model.OrderBike;
 import com.example.demo.model.OrderInfo;
+import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.OrderBikeRepository;
 import com.example.demo.repository.OrderInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class OrderInfoRestController {
 
     @Autowired
     OrderBikeRepository orderBikeRepository;
+
+    @Autowired
+    CustomerRepository customerRepository;
 
     //method retrieving the Sort.Direction enum
     private Sort.Direction getSortDirection(String direction){
@@ -125,10 +130,23 @@ public class OrderInfoRestController {
     public ResponseEntity<OrderInfo> updateOrderById(@PathVariable("id") int id, @RequestBody OrderInfo updatedOrderInfo){
             OrderInfo orderInfo = orderRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Cannot find order with ID = " + id));
-            orderInfo.setCustomerByCustomerId(updatedOrderInfo.getCustomerByCustomerId());
+
             orderInfo.setTotalPrice(updatedOrderInfo.getTotalPrice());
-            final OrderInfo orderInfoFinal = orderRepository.save(orderInfo);
-            return new ResponseEntity<>(orderInfoFinal, HttpStatus.OK);
+
+            Customer updatedCustomer = updatedOrderInfo.getCustomerByCustomerId();
+            orderInfo.setCustomerByCustomerId(updatedCustomer);
+
+            Collection<OrderBike> orderBikes = updatedOrderInfo.getOrderBikesByOrderId();
+            for (OrderBike orderBike : orderBikes){
+                orderBike.setOrderId(orderInfo.getOrderId());
+            }
+            updatedOrderInfo.setOrderId(orderInfo.getOrderId());
+            updatedOrderInfo.setOrderBikesByOrderId(orderBikes);
+            orderInfo.setOrderBikesByOrderId(updatedOrderInfo.getOrderBikesByOrderId());
+
+            orderRepository.save(orderInfo);
+
+            return new ResponseEntity<>(orderInfo, HttpStatus.OK);
 
     }
 

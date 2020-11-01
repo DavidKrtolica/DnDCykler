@@ -136,6 +136,7 @@ public class OrderInfoRestController {
             Customer updatedCustomer = updatedOrderInfo.getCustomerByCustomerId();
             orderInfo.setCustomerByCustomerId(updatedCustomer);
 
+            //NOT WORKING
             Collection<OrderBike> orderBikes = updatedOrderInfo.getOrderBikesByOrderId();
             for (OrderBike orderBike : orderBikes){
                 orderBike.setOrderId(orderInfo.getOrderId());

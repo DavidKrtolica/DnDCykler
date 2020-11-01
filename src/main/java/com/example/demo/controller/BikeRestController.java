@@ -237,6 +237,12 @@ public class BikeRestController {
             // IT WILL NOT POPULATE OUR ARRAYLIST, THEN IT WILL GO TO THE NEXT IF STATEMENT BECAUSE "size" REMAINED 0 AND "parameter" IS STILL EQUAL TO "null"
             // IT WILL TRY OUT DIFFERENT IF-STATEMENTS UNTIL ONE PARAMETER VALUE MATCHES ATTRIBUTE VALUE OR THERE ARE NO MATCHES SO IT WILL JUST THROW NOTHING FOUND ERROR
             // CHECKS IF THE PARAMETER IS OF VALUE "type"
+
+            // CHECKS IF THE PARAMETER IS OF VALUE "frameSize"
+            if (parameter != null && parameter.length() < 4 && sortedBikesFromDB.size() == 0) {
+                sortedBikesFromDB = bikeRepository.findByFrameSizeContaining(parameter);
+            }
+
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 sortedBikesFromDB = bikeRepository.findByTypeContaining(parameter);
             }
@@ -247,10 +253,6 @@ public class BikeRestController {
             // CHECKS IF THE PARAMETER IS OF VALUE "brand"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
                 sortedBikesFromDB = bikeRepository.findByBrandContaining(parameter);
-            }
-            // CHECKS IF THE PARAMETER IS OF VALUE "frameSize"
-            if (parameter != null && sortedBikesFromDB.size() == 0) {
-                sortedBikesFromDB = bikeRepository.findByFrameSizeContaining(parameter);
             }
 
             // IF NO PARAMETER WAS INPUTTED, THEN PASS ALL THE BICYCLES IN CASE OF SELECTING THE PRICE RANGE
@@ -282,6 +284,55 @@ public class BikeRestController {
             // The 1. page has 6 objects. The 2. page has 2 objects. There should not be page number greater then 2 then.
             int number = bikes.size() / size;
 
+            // SORTING METHOD WHICH SORTS BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
+            switch (filter) {
+                case "type":
+                    if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToByType);
+                    } else {
+                        Collections.sort(bikes, Bike::compareToByType);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+
+                case "state":
+                    if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToByState);
+                    } else {
+                        Collections.sort(bikes, Bike::compareToByState);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+
+                case "brand":
+                    if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToByBrand);
+                    } else {
+                        Collections.sort(bikes, Bike::compareToByBrand);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+
+                case "frameSize":
+                    if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToByFrameSize);
+                    } else if (sort.equals("desc")) {
+                        Collections.sort(bikes, Bike::compareToByFrameSize);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+
+                case "price":
+                    if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToByPrice);
+                    } else if (sort.equals("desc")) {
+                        Collections.sort(bikes, Bike::compareToByPrice);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+            }
+
+
             // IF-STATEMENT TO CHECK THE ENTERED PAGE AND SIZE
             if (page >= 0 && page <= number) {
                 // INITIALIZE THE VARIABLES THAT WILL BE NEEDED THROUGHOUT THE METHOD RUN
@@ -303,54 +354,6 @@ public class BikeRestController {
                         break;
                     }
                     pagedBikes.add(bikes.get(n));
-                }
-
-                // SORTING METHOD WHICH SORTS BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
-                switch (filter) {
-                    case "type":
-                        if (sort.equals("asc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByType);
-                        } else {
-                            Collections.sort(pagedBikes, Bike::compareToByType);
-                            Collections.reverse(pagedBikes);
-                        }
-                    break;
-
-                    case "state":
-                        if (sort.equals("asc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByState);
-                        } else {
-                            Collections.sort(pagedBikes, Bike::compareToByState);
-                            Collections.reverse(pagedBikes);
-                        }
-                    break;
-
-                    case "brand":
-                        if (sort.equals("asc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByBrand);
-                        } else {
-                            Collections.sort(pagedBikes, Bike::compareToByBrand);
-                            Collections.reverse(pagedBikes);
-                        }
-                    break;
-
-                    case "frameSize":
-                        if (sort.equals("asc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByFrameSize);
-                        } else if (sort.equals("desc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByFrameSize);
-                            Collections.reverse(pagedBikes);
-                        }
-                    break;
-
-                    case "price":
-                        if (sort.equals("asc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByPrice);
-                        } else if (sort.equals("desc")) {
-                            Collections.sort(pagedBikes, Bike::compareToByPrice);
-                            Collections.reverse(pagedBikes);
-                        }
-                    break;
                 }
 
                 // MAP WHICH REPRESENTS VALUES AND IS RETURNED

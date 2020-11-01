@@ -233,9 +233,11 @@ public class BikeRestController {
             List<Bike> pagedBikes = new ArrayList<>();
 
             // BEGINNING OF SEARCHING BY PARAMETER VALUE
+            // IT WILL GO INTO FIRST IF-STATEMENT, AND IF THE PARAMETER VALUE DOESN'T MATCH TO THE ANY OF THE VALUES IN THE BIKE TABLE FOR ATTRIBUTE "type"
+            // IT WILL NOT POPULATE OUR ARRAYLIST, THEN IT WILL GO TO THE NEXT IF STATEMENT BECAUSE "size" REMAINED 0 AND "parameter" IS STILL EQUAL TO "null"
+            // IT WILL TRY OUT DIFFERENT IF-STATEMENTS UNTIL ONE PARAMETER VALUE MATCHES ATTRIBUTE VALUE OR THERE ARE NO MATCHES SO IT WILL JUST THROW NOTHING FOUND ERROR
             // CHECKS IF THE PARAMETER IS OF VALUE "type"
             if (parameter != null && sortedBikesFromDB.size() == 0) {
-                System.out.println("You are in the populating loop.");
                 sortedBikesFromDB = bikeRepository.findByTypeContaining(parameter);
             }
             // CHECKS IF THE PARAMETER IS OF VALUE "state"
@@ -266,10 +268,9 @@ public class BikeRestController {
                         bikes.add(sortedBikesFromDB.get(i));
                     }
                 }
-            } else{
-                // !!! IF THERE IS NO PARAMETER WRITTEN OR PRICE RANGE, POPULATION OF THE ARRAYLIST IS DONE NOW !!!
-                bikes = bikeRepository.findAll();
             }
+
+            bikes = sortedBikesFromDB;
 
             // IN CASE SOMETHING WENT WRONG WITH DATABASE CONNECTION OR THERE IS NO BIKE ENTITIES IN THE DATABASE
             if (bikes.isEmpty()) {
@@ -305,46 +306,51 @@ public class BikeRestController {
                 }
 
                 // SORTING METHOD WHICH SORTS BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
-                if (filter.equals("type")) {
-                    if (sort.equals("asc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByType);
-                    } else {
-                        Collections.sort(pagedBikes, Bike::compareToByType);
-                        Collections.reverse(pagedBikes);
-                    }
+                switch (filter) {
+                    case "type":
+                        if (sort.equals("asc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByType);
+                        } else {
+                            Collections.sort(pagedBikes, Bike::compareToByType);
+                            Collections.reverse(pagedBikes);
+                        }
+                    break;
 
-                } else if (filter.equals("state")) {
-                    if (sort.equals("asc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByState);
-                    } else {
-                        Collections.sort(pagedBikes, Bike::compareToByState);
-                        Collections.reverse(pagedBikes);
-                    }
+                    case "state":
+                        if (sort.equals("asc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByState);
+                        } else {
+                            Collections.sort(pagedBikes, Bike::compareToByState);
+                            Collections.reverse(pagedBikes);
+                        }
+                    break;
 
-                } else if (filter.equals("brand")) {
-                    if (sort.equals("asc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByBrand);
-                    } else {
-                        Collections.sort(pagedBikes, Bike::compareToByBrand);
-                        Collections.reverse(pagedBikes);
-                    }
+                    case "brand":
+                        if (sort.equals("asc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByBrand);
+                        } else {
+                            Collections.sort(pagedBikes, Bike::compareToByBrand);
+                            Collections.reverse(pagedBikes);
+                        }
+                    break;
 
-                } else if (filter.equals("frameSize")) {
-                    if (sort.equals("asc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByFrameSize);
-                    } else if (sort.equals("desc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByFrameSize);
-                        Collections.reverse(pagedBikes);
-                    }
-                }
+                    case "frameSize":
+                        if (sort.equals("asc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByFrameSize);
+                        } else if (sort.equals("desc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByFrameSize);
+                            Collections.reverse(pagedBikes);
+                        }
+                    break;
 
-                 else if(filter.equals("price")) {
-                    if (sort.equals("asc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByPrice);
-                    } else if (sort.equals("desc")) {
-                        Collections.sort(pagedBikes, Bike::compareToByPrice);
-                        Collections.reverse(pagedBikes);
-                    }
+                    case "price":
+                        if (sort.equals("asc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByPrice);
+                        } else if (sort.equals("desc")) {
+                            Collections.sort(pagedBikes, Bike::compareToByPrice);
+                            Collections.reverse(pagedBikes);
+                        }
+                    break;
                 }
 
                 // MAP WHICH REPRESENTS VALUES AND IS RETURNED

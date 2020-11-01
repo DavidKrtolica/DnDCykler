@@ -24,4 +24,4 @@ jobs:
       run: mvn -B package --file pom.xml
 env:
   DATABASE_URL:${{secrets.DATABASE_URL}}
-  run: mvn -B package --file pom.xml
+    run: mvn -B package --file pom.xml

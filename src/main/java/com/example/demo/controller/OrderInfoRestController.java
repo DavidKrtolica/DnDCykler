@@ -131,8 +131,10 @@ public class OrderInfoRestController {
             OrderInfo orderInfo = orderRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Cannot find order with ID = " + id));
 
+            //UPDATING THE TOTAL PRICE
             orderInfo.setTotalPrice(updatedOrderInfo.getTotalPrice());
 
+            //UPDATING THE CUSTOMER INFO
             Customer updatedCustomer = updatedOrderInfo.getCustomerByCustomerId();
             orderInfo.setCustomerByCustomerId(updatedCustomer);
 

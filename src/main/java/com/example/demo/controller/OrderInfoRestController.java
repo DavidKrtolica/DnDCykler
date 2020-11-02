@@ -136,15 +136,6 @@ public class OrderInfoRestController {
             Customer updatedCustomer = updatedOrderInfo.getCustomerByCustomerId();
             orderInfo.setCustomerByCustomerId(updatedCustomer);
 
-            //NOT WORKING - CANNOT UPDATE ORDERBIKE OBJECT
-            Collection<OrderBike> orderBikes = updatedOrderInfo.getOrderBikesByOrderId();
-            for (OrderBike orderBike : orderBikes){
-                orderBike.setOrderId(orderInfo.getOrderId());
-            }
-            updatedOrderInfo.setOrderId(orderInfo.getOrderId());
-            updatedOrderInfo.setOrderBikesByOrderId(orderBikes);
-            orderInfo.setOrderBikesByOrderId(updatedOrderInfo.getOrderBikesByOrderId());
-
             orderRepository.save(orderInfo);
 
             return new ResponseEntity<>(orderInfo, HttpStatus.OK);

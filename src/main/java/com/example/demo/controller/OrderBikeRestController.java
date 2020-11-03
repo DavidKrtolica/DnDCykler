@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.OrderBike;
 import com.example.demo.repository.OrderBikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +61,10 @@ public class OrderBikeRestController {
             pageOrderBike = orderBikeRepository.findByOrderId(orderId, paging);
         }
 
-        List<OrderBike> orderBikes = pageOrderBike.getContent();
-        if (orderBikes.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if(pageOrderBike.isEmpty()){
+            throw new ResourceNotFoundException("There are no bike orders!");
         }
-
+        List<OrderBike> orderBikes = pageOrderBike.getContent();
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderBikes);
         response.put("currentPage", pageOrderBike.getNumber());

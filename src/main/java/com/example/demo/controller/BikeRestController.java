@@ -219,14 +219,13 @@ public class BikeRestController {
     public ResponseEntity<Map<String, Object>> getAllBikes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
-            @RequestParam(defaultValue = "brand") String filter,
+            @RequestParam(defaultValue = "bikeId") String filter,
             @RequestParam(defaultValue = "desc") String sort,
             @RequestParam(required = false) String parameter,
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max)
 
     {
-        try {
             // INITIALIZE AND POPULATE AN ARRAYLIST FOR ALL BIKES,ALSO INITIALIZE AN ARRAYLIST FOR PAGED BIKES
             List<Bike> sortedBikesFromDB = new ArrayList<>();
             List<Bike> bikes = new ArrayList<>();
@@ -260,19 +259,19 @@ public class BikeRestController {
                 sortedBikesFromDB = bikeRepository.findAll();;
             }
 
+            bikes = sortedBikesFromDB;
+
             // MIN & MAX - PRICE RANGE
             if (min != null && max != null) {
                 // CHECKS THE PRICE OF THE BICYCLE AND ADDS IT TO THE ARRAY WHICH CONSISTS OF ALL BICYCLES THAT PASS THE MIN-MAX TEST
                 int priceTest;
-                for (int i = 0; i < sortedBikesFromDB.size(); i++) {
+                for (int i = 0; i < bikes.size(); i++) {
                     priceTest = sortedBikesFromDB.get(i).getPrice();
-                    if (priceTest >= min && priceTest <= max) {
-                        bikes.add(sortedBikesFromDB.get(i));
+                    if (priceTest < min || priceTest > max) {
+                        bikes.remove(bikes.get(i));
                     }
                 }
             }
-
-            bikes = sortedBikesFromDB;
 
             // IN CASE SOMETHING WENT WRONG WITH DATABASE CONNECTION OR THERE IS NO BIKE ENTITIES IN THE DATABASE
             if (bikes.isEmpty()) {
@@ -286,37 +285,46 @@ public class BikeRestController {
 
             // SORTING METHOD WHICH SORTS BY TYPE, STATE, BRAND, FRAME SIZE OR PRICE
             switch (filter) {
-                case "type":
+                case "bikeId":
                     if (sort.equals("asc")) {
+                        Collections.sort(bikes, Bike::compareToById);
+                    } else if (sort.equals("desc")) {
+                        Collections.sort(bikes, Bike::compareToById);
+                        Collections.reverse(bikes);
+                    }
+                    break;
+
+                case "type":
+                    if (sort.equals("desc")) {
                         Collections.sort(bikes, Bike::compareToByType);
-                    } else {
+                    } else if (sort.equals("asc")) {
                         Collections.sort(bikes, Bike::compareToByType);
                         Collections.reverse(bikes);
                     }
                     break;
 
                 case "state":
-                    if (sort.equals("asc")) {
+                    if (sort.equals("desc")) {
                         Collections.sort(bikes, Bike::compareToByState);
-                    } else {
+                    } else if (sort.equals("asc")) {
                         Collections.sort(bikes, Bike::compareToByState);
                         Collections.reverse(bikes);
                     }
                     break;
 
                 case "brand":
-                    if (sort.equals("asc")) {
+                    if (sort.equals("desc")) {
                         Collections.sort(bikes, Bike::compareToByBrand);
-                    } else {
+                    } else if (sort.equals("asc")) {
                         Collections.sort(bikes, Bike::compareToByBrand);
                         Collections.reverse(bikes);
                     }
                     break;
 
                 case "frameSize":
-                    if (sort.equals("asc")) {
+                    if (sort.equals("desc")) {
                         Collections.sort(bikes, Bike::compareToByFrameSize);
-                    } else if (sort.equals("desc")) {
+                    } else if (sort.equals("asc")) {
                         Collections.sort(bikes, Bike::compareToByFrameSize);
                         Collections.reverse(bikes);
                     }
@@ -363,11 +371,8 @@ public class BikeRestController {
                 response.put("totalItems", bikes.size());
                 response.put("totalPages", number);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else
-            throw new ResourceNotFoundException("Oops, something went wrong. There are no Bikes that match your criteria.");
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else
+                throw new ResourceNotFoundException("Oops, something went wrong. There are no Bikes that match your criteria.");
     }
 }

@@ -64,7 +64,7 @@ public class CustomerRestController {
         }
         List<Customer> customers = pageCustomers.getContent();
         if (customers.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("There are no customers!");
         }
 
         Map<String, Object> response = new HashMap<>();
@@ -120,7 +120,7 @@ public class CustomerRestController {
 
             List<Customer> customers = customerRepository.findAll();
             if (customers.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                throw new ResourceNotFoundException("There are no customers!");
             } else {
                 customerRepository.deleteAll();
                 return new ResponseEntity<>(HttpStatus.OK);

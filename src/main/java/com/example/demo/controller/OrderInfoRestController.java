@@ -64,7 +64,7 @@ public class OrderInfoRestController {
         List<OrderInfo> orderInfos = pageOrders.getContent();
 
         if (orderInfos.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("There are no orders!");
         }
 
         Map<String, Object> response = new HashMap<>();
@@ -107,7 +107,7 @@ public class OrderInfoRestController {
     public ResponseEntity<OrderInfo> deleteAllOrders(){
             List<OrderInfo> orderInfos = orderRepository.findAll();
             if (orderInfos.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                throw new ResourceNotFoundException("There are no orders!");
             } else {
                 orderRepository.deleteAll();
                 return new ResponseEntity<>(HttpStatus.OK);

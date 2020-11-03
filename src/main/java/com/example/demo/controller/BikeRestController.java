@@ -266,7 +266,7 @@ public class BikeRestController {
                 // CHECKS THE PRICE OF THE BICYCLE AND ADDS IT TO THE ARRAY WHICH CONSISTS OF ALL BICYCLES THAT PASS THE MIN-MAX TEST
                 int priceTest;
                 for (int i = 0; i < bikes.size(); i++) {
-                    priceTest = sortedBikesFromDB.get(i).getPrice();
+                    priceTest = bikes.get(i).getPrice();
                     if (priceTest < min || priceTest > max) {
                         bikes.remove(bikes.get(i));
                     }

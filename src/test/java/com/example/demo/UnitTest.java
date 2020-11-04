@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -123,85 +120,6 @@ public class UnitTest {
         assert(condition);
     }
 
-    // TESTS METHOD FOR CREATING A NEW ORDER_INFO
-    @Test
-    public void creatingNewOrderInfo() {
-        // CREATE A CUSTOMER
-        Customer customer = new Customer();
-        customer.setCustomerId(1);
-        customer.setFirstName("TEST");
-        customer.setLastName("TEST");
-        customer.setAddress("TEST");
-        customer.setPhoneNr("TEST");
-        customer.setEmail("TEST");
-
-        customerRepository.save(customer);
-
-        // CREATE BIKES
-        Bike bike = new Bike();
-        bike.setType("TEST");
-        bike.setState("TEST");
-        bike.setBrand("TEST");
-        bike.setFrameSize("TEST");
-        bike.setPrice(3333);
-
-        Bike BIKE = new Bike();
-        BIKE.setType("TEST");
-        BIKE.setState("TEST");
-        BIKE.setBrand("TEST");
-        BIKE.setFrameSize("TEST");
-        BIKE.setPrice(6666);
-
-        bikeRepository.save(bike);
-        bikeRepository.save(BIKE);
-
-        // CREATE ORDER BIKE
-        OrderBike orderBike1 = new OrderBike();
-        orderBike1.setOrderId(1);
-        orderBike1.setBikeByBikeId(bike);
-
-        OrderBike orderBike2 = new OrderBike();
-        orderBike2.setOrderId(1);
-        orderBike2.setBikeByBikeId(BIKE);
-
-        // CREATE COLLECTION OF ORDERBIKE-S
-        Collection<OrderBike> testOrders = new ArrayList<>();
-        testOrders.add(orderBike1);
-        testOrders.add(orderBike2);
-
-        orderBikeRepository.save(orderBike1);
-        orderBikeRepository.save(orderBike2);
-
-        //-----------------------------------------------
-
-
-
-        // ORDER INFO
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setOrderId(1);
-        orderInfo.setTotalPrice(9999);
-        orderInfo.setCustomerByCustomerId(customer);
-        orderInfo.setOrderBikesByOrderId(testOrders);
-
-        orderInfoRepository.save(orderInfo);
-
-
-        // TEST THE ACTUAL METHOD
-        List<OrderInfo> listOfOrders = orderInfoRepository.findAll();
-
-        boolean condition = false;
-
-        for (int i = 0; i < listOfOrders.size(); i++) {
-            if (listOfOrders.get(i).getOrderId() == 1 || listOfOrders.get(i).getTotalPrice() == 9999) {
-                condition = true;
-            }
-        }
-
-        assert(condition);
-    }
-
-
-
 
     // TESTS METHOD FOR DELETING ALL CUSTOMERS
     @Test
@@ -233,7 +151,10 @@ public class UnitTest {
     // TESTS METHOD FOR UPDATING CUSTOMER
     @Test
     public void returnsUpdateCustomer() {
-        Customer customer = customerRepository.findById(1).
+        Customer initialCustomer = new Customer("David", "David", "CPH", "12341234", null);
+        customerRepository.save(initialCustomer);
+
+        Customer customer = customerRepository.findById(initialCustomer.getCustomerId()).
                 orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         customer.setFirstName("NAME");
@@ -251,7 +172,10 @@ public class UnitTest {
     // TESTS METHOD FOR UPDATING A BIKE
     @Test
     public void returnsUpdateBike() {
-        Bike bike = bikeRepository.findById(1).
+        Bike initialBike = new Bike("Race", "New", "GT", "XL", 6000);
+        bikeRepository.save(initialBike);
+
+        Bike bike = bikeRepository.findById(initialBike.getBikeId()).
                 orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         bike.setType("TYPE");
@@ -266,5 +190,4 @@ public class UnitTest {
         assert (fBike.getPrice() == bike.getPrice());
     }
 
-    // TESTS METHOD FOR UPDATING ORDER
 }

@@ -16,8 +16,8 @@ public class Customer {
     private String email;
     private Collection<OrderInfo> orderInfosByCustomerId;
 
-    public Customer(int customerId, String firstName, String lastName, String address, String phoneNr, String email) {
-        this.customerId = customerId;
+
+    public Customer(String firstName, String lastName, String address, String phoneNr, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;

@@ -16,8 +16,7 @@ public class Bike {
     private int price;
     private Collection<OrderBike> orderBikesByBikeId;
 
-    public Bike(int bikeId, String type, String state, String brand, String frameSize, int price) {
-        this.bikeId = bikeId;
+    public Bike(String type, String state, String brand, String frameSize, int price) {
         this.type = type;
         this.state = state;
         this.brand = brand;

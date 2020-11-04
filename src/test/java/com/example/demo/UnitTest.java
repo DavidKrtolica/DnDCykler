@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
-@SpringBootTest
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UnitTest {

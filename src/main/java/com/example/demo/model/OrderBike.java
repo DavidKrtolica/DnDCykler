@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "order_bike", schema = "bikeshopdb")
+@Table(name = "order_bike", schema = "heroku_7f91564409e745b")
 @IdClass(OrderBikePK.class)
 public class OrderBike {
     private int orderId;

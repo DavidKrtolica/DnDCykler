@@ -23,7 +23,7 @@ public class OrderBikeRestController {
     @Autowired
     OrderBikeRepository orderBikeRepository;
 
-    //method retrieving the Sort.Direction enum
+    //METHOD RETRIEVING THE SORT.DIRECTON ENUM
     private Sort.Direction getSortDirection(String direction) {
         if (direction.equals("asc")) {
             return Sort.Direction.ASC;
@@ -43,13 +43,13 @@ public class OrderBikeRestController {
 
         List<Sort.Order> orders = new ArrayList<>();
         if (sort[0].contains(",")) {
-            //will sort more than 2 fields, sortOrder="field,direction"
+            //WILL SORT MORE THAN 2 FIELDS, SORTORDER = "FIELD, DIRECTION"
             for (String sortOrder : sort) {
                 String[] _sort = sortOrder.split(",");
                 orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
             }
         } else {
-            //sort=[field,direction]
+            //SORT = [FIELD, DIRECTION]
             orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
         }
         Pageable paging = PageRequest.of(page, size, Sort.by(orders));

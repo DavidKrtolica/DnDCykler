@@ -129,6 +129,7 @@ public class Bike {
 
 
     // METHODS FOR SORTING (.sort)
+
     public int compareToByType(Object bike) {
         return (((Bike) bike).getType()).compareTo(this.getType());
     }
@@ -148,6 +149,13 @@ public class Bike {
     public int compareToByPrice(Object bike) {
         int number1 = this.getPrice();
         int number2 = ((Bike) bike).getPrice();
+        // return (((Bike) bike).getPrice()).(this.getPrice());
+        return Integer.compare(number1, number2);
+    }
+
+    public int compareToById(Object bike) {
+        int number1 = this.getBikeId();
+        int number2 = ((Bike) bike).getBikeId();
         // return (((Bike) bike).getPrice()).(this.getPrice());
         return Integer.compare(number1, number2);
     }

@@ -140,18 +140,13 @@ public class BikeRestController {
     //ADDING NEW BIKE
     @PostMapping("/bikes")
     public ResponseEntity<Bike> createBike(@RequestBody Bike bike) {
-        try {
             Bike newBike = bikeRepository.save(bike);
             return new ResponseEntity<>(newBike, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     //UPDATING A BIKE BY ID
     @PutMapping("/bikes/{id}")
     public ResponseEntity<Bike> updateBikeById(@PathVariable("id") int id, @RequestBody Bike updatedBike) {
-        try {
             // INITIALIZE BOOLEAN AND TEMPORARY INT VARIABLE
             boolean condition = false;
             int temp = 0;
@@ -182,11 +177,10 @@ public class BikeRestController {
                 final Bike bikeFinal = bikeRepository.save(bike);
 
                 return new ResponseEntity<>(bikeFinal, HttpStatus.OK);
+            } else {
+                throw new ResourceNotFoundException("Cannot find bike you want to update!");
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
         //DELETING A BIKE BY ID
@@ -275,7 +269,7 @@ public class BikeRestController {
 
             // IN CASE SOMETHING WENT WRONG WITH DATABASE CONNECTION OR THERE IS NO BIKE ENTITIES IN THE DATABASE
             if (bikes.isEmpty()) {
-                throw new ResourceNotFoundException("There are no Bikes.");
+                throw new ResourceNotFoundException("There are no bikes.");
             }
 
             // USE THIS TO CHECK THE INPUTTED PAGE AND SIZE
@@ -373,6 +367,6 @@ public class BikeRestController {
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else
-                throw new ResourceNotFoundException("Oops, something went wrong. There are no Bikes that match your criteria.");
+                throw new ResourceNotFoundException("Oops, something went wrong. There are no bikes that match your criteria.");
     }
 }

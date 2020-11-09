@@ -34,13 +34,6 @@ public class UnitTest {
     @Autowired
     OrderBikeRepository orderBikeRepository;
 
-    @BeforeEach
-    public void init(){
-        orderBikeRepository.deleteAll();
-        customerRepository.deleteAll();
-        orderInfoRepository.deleteAll();
-        bikeRepository.deleteAll();
-    }
 
     // TESTS METHOD FOR FINDING CUSTOMER BY ID
     @Test
@@ -72,24 +65,8 @@ public class UnitTest {
         testBike.setBrand("TEST");
         testBike.setFrameSize("TEST");
         testBike.setPrice(2222);
-
-        Bike newBike = bikeRepository.save(testBike);
-
-        boolean condition = false;
-
-        List<Bike> bikesForTesting = bikeRepository.findAll();
-
-        for (int i = 0; i < bikesForTesting.size(); i++) {
-            if (bikesForTesting.get(i).getState().equals("TEST") ||
-            bikesForTesting.get(i).getType().equals("TEST") ||
-            bikesForTesting.get(i).getFrameSize().equals("TEST")||
-            bikesForTesting.get(i).getBrand().equals("TEST") ||
-            bikesForTesting.get(i).getPrice() == 2222) {
-
-                condition = true;
-            }
-        }
-        assert(condition);
+        bikeRepository.save(testBike);
+        assert(!bikeRepository.findAll().isEmpty());
     }
 
     // TESTS METHOD FOR CREATING A NEW CUSTOMER
@@ -125,28 +102,22 @@ public class UnitTest {
     // TESTS METHOD FOR DELETING ALL CUSTOMERS
     @Test
     public void returnsDeleteAllCustomers() {
-        List<Customer> customers = customerRepository.findAll();
         customerRepository.deleteAll();
-
-        assert(customers.size() == 0);
+        assert(customerRepository.findAll().isEmpty());
     }
 
     // TESTS METHOD FOR DELETING ALL BIKES
     @Test
     public void returnsDeleteAllBikes() {
-        List<Bike> bikes = bikeRepository.findAll();
         bikeRepository.deleteAll();
-
-        assert(bikes.size() == 0);
+        assert(bikeRepository.findAll().isEmpty());
     }
 
     // TESTS METHOD DELETING ALL ORDERS
     @Test
     public void returnsDeleteAllOrderInfo() {
-        List<OrderInfo> orderInfos = orderInfoRepository.findAll();
         orderInfoRepository.deleteAll();
-
-        assert(orderInfos.size() == 0);
+        assert(orderInfoRepository.findAll().isEmpty());
     }
 
     // TESTS METHOD FOR UPDATING CUSTOMER

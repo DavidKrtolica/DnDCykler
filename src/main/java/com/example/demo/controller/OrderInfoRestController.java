@@ -135,8 +135,7 @@ public class OrderInfoRestController {
             orderInfo.setTotalPrice(updatedOrderInfo.getTotalPrice());
 
             //UPDATING THE CUSTOMER INFO
-            Customer updatedCustomer = updatedOrderInfo.getCustomerByCustomerId();
-            orderInfo.setCustomerByCustomerId(updatedCustomer);
+            orderInfo.setCustomerId(updatedOrderInfo.getCustomerId());
 
             orderRepository.save(orderInfo);
 

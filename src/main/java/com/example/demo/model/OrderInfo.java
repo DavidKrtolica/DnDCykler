@@ -10,9 +10,10 @@ import java.util.Collection;
 @Table(name = "order_info", schema = "heroku_7f91564409e745b")
 public class OrderInfo {
     private int orderId;
+    private int customerId;
     private int totalPrice;
     private Collection<OrderBike> orderBikesByOrderId;
-    private Customer customerByCustomerId;
+
 
     public OrderInfo(int totalPrice) {
         this.totalPrice = totalPrice;
@@ -30,6 +31,16 @@ public class OrderInfo {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    @Basic
+    @Column(name = "customer_id", nullable = false)
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
     @Basic
@@ -72,13 +83,4 @@ public class OrderInfo {
         this.orderBikesByOrderId = orderBikesByOrderId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id", nullable = false)
-    public Customer getCustomerByCustomerId() {
-        return customerByCustomerId;
-    }
-
-    public void setCustomerByCustomerId(Customer customerByCustomerId) {
-        this.customerByCustomerId = customerByCustomerId;
-    }
 }

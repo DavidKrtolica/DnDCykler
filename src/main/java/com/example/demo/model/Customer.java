@@ -14,7 +14,6 @@ public class Customer {
     private String address;
     private String phoneNr;
     private String email;
-    private Collection<OrderInfo> orderInfosByCustomerId;
 
 
     public Customer(String firstName, String lastName, String address, String phoneNr, String email) {
@@ -117,13 +116,4 @@ public class Customer {
         return result;
     }
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "customerByCustomerId")
-    public Collection<OrderInfo> getOrderInfosByCustomerId() {
-        return orderInfosByCustomerId;
-    }
-
-    public void setOrderInfosByCustomerId(Collection<OrderInfo> orderInfosByCustomerId) {
-        this.orderInfosByCustomerId = orderInfosByCustomerId;
-    }
 }

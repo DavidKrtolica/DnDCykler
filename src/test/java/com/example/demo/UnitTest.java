@@ -38,6 +38,7 @@ public class UnitTest {
     // TESTS METHOD FOR FINDING CUSTOMER BY ID
     @Test
     public void returnsCustomer() {
+        customerRepository.deleteAll();
         Optional<Customer> customer = customerRepository.findById(2);
         assert(!customer.isPresent());      // TEST WILL FAIL BECAUSE TEST IS DONE ON EMPTY DB
     }
@@ -45,6 +46,7 @@ public class UnitTest {
     // TESTS METHOD FOR FINDING BIKE BY ID
     @Test
     public void returnsBike() {
+        bikeRepository.deleteAll();
         Optional<Bike> bike = bikeRepository.findById(4);
         assert(!bike.isPresent());
     }
@@ -52,6 +54,7 @@ public class UnitTest {
     // TESTS METHOD FOR FINDING ORDER BY ID
     @Test
     public void returnsOrderInfo() {
+        orderInfoRepository.deleteAll();
         Optional<OrderInfo> orderInfo = orderInfoRepository.findById(3);
         assert(!orderInfo.isPresent());
     }
@@ -59,6 +62,7 @@ public class UnitTest {
     // TESTS METHOD FOR CREATING A NEW BIKE
     @Test
     public void creatingNewBike() {
+        bikeRepository.deleteAll();
         Bike testBike = new Bike();
         testBike.setType("TEST");
         testBike.setState("TEST");

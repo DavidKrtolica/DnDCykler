@@ -14,6 +14,18 @@ public class Bike {
     private String brand;
     private String frameSize;
     private int price;
+
+    @Override
+    public String toString() {
+        return "Bike{" +
+                "type='" + type + '\'' +
+                ", state='" + state + '\'' +
+                ", brand='" + brand + '\'' +
+                ", frameSize='" + frameSize + '\'' +
+                ", price=" + price +
+                '}';
+    }
+
     private Collection<OrderBike> orderBikesByBikeId;
 
     public Bike(String type, String state, String brand, String frameSize, int price) {

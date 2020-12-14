@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Bikes</title>
+</head>
+<body>
+    <h1>Bikes</h1>
+    <div th:each="bike: ${bikes}">
+        <div th:text="${bike.toString()}"></div>
+    </div>
+</body>
+</html>

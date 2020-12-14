@@ -15,7 +15,7 @@ public class ControllerHTML {
     @Autowired
     BikeRepository bikeRepository;
 
-    @GetMapping("/view")
+    @GetMapping("/")
     public String index(Model model) {
         List<Bike> bikes = bikeRepository.findAll();
         model.addAttribute("bikes", bikes);

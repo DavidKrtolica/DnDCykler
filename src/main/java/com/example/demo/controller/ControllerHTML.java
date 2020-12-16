@@ -20,7 +20,7 @@ public class ControllerHTML {
     public String index(Model model) {
         List<Bike> bikes = bikeRepository.findAll();
         model.addAttribute("bikes", bikes);
-        return "/index";
+        return "index";
     }
 
 }
